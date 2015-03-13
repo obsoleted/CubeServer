@@ -19,7 +19,7 @@
     [Authorize]
     public class ModelController : ApiController
     {
-        private IModelRepository modelRepository;
+        private readonly IModelRepository modelRepository;
 
         private const int ClientCacheTimeInSeconds = 120;
         private const int ServerCacheTimeInSeconds = 600;
@@ -30,20 +30,20 @@
         }
 
         [Route("models/{modelName}")]
-        public Task<ModelMetadata> GetMetadata(string modelName)
+        public IHttpActionResult GetMetadata(string modelName)
         {
-            return modelRepository.GetModelMetadataAsync(modelName);
+            return Ok(modelRepository.GetModelMetadataAsync(modelName));
         }
 
         [Route("models/{modelName}/{viewport}")]
-        public Task<ViewportMetadata> GetViewportMetadata(string modelName, int viewport)
+        public IHttpActionResult GetViewportMetadata(string modelName, int viewport)
         {
-            return modelRepository.GetViewportMetadataAsync(modelName, viewport);
+            return Ok(modelRepository.GetViewportMetadataAsync(modelName, viewport));
         }
 
         [CacheOutput(ClientTimeSpan = ClientCacheTimeInSeconds, ServerTimeSpan = ServerCacheTimeInSeconds)]
         [Route("models/{modelName}/v{viewport}/{data}")]
-        public async Task<HttpResponseMessage> GetVertexData(string modelName, int viewport, string data)
+        public async Task<IHttpActionResult> GetVertexData(string modelName, int viewport, string data)
         {
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
             //string dataPath = string.Format("{0}_{1}_{2}.obj", x, y, z);
@@ -52,13 +52,13 @@
             result.Content.Headers.ContentType =
                 new MediaTypeHeaderValue("application/octet-stream");
             result.Content.Headers.ContentLength = stream.Length;
-            return result;
+            return ResponseMessage(result);
         }
 
 
         [CacheOutput(ClientTimeSpan = ClientCacheTimeInSeconds, ServerTimeSpan = ServerCacheTimeInSeconds)]
         [Route("models/{modelName}/t{textureIndex}/{data}")]
-        public async Task<HttpResponseMessage> GetTextureData(string modelName, int textureIndex, string data)
+        public async Task<IHttpActionResult> GetTextureData(string modelName, int textureIndex, string data)
         {
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
             //string dataPath = string.Format("{0}_{1}_{2}.obj", x, y, z);
@@ -67,7 +67,7 @@
             result.Content.Headers.ContentType =
                 new MediaTypeHeaderValue("application/octet-stream");
             result.Content.Headers.ContentLength = stream.Length;
-            return result;
+            return ResponseMessage(result);
         }
     }
 }

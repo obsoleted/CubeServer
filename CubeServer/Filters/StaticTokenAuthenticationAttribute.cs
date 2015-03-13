@@ -18,34 +18,35 @@
     {
         private const string StaticTokenAuthenticationScheme = "StaticToken";
 
-        public async Task AuthenticateAsync(HttpAuthenticationContext context, System.Threading.CancellationToken cancellationToken)
+        public Task AuthenticateAsync(HttpAuthenticationContext context, System.Threading.CancellationToken cancellationToken)
         {
             var request = context.Request;
             var authorization = request.Headers.Authorization;
 
             if (authorization == null)
             {
-                return;
+                return Task.FromResult(0);
             }
 
             if (authorization.Scheme != StaticTokenAuthenticationScheme)
             {
-                return;
+                return Task.FromResult(0);
             }
 
             if (String.IsNullOrEmpty(authorization.Parameter))
             {
                 context.ErrorResult = new UnauthorizedResult(new[] { new AuthenticationHeaderValue(StaticTokenAuthenticationScheme) }, request);
-                return;
+                return Task.FromResult(0);
             }
 
             if (authorization.Parameter != Configuration.StaticToken)
             {
                 context.ErrorResult = new UnauthorizedResult(new [] { new AuthenticationHeaderValue(StaticTokenAuthenticationScheme) }, request);
-                return;
+                return Task.FromResult(0);
             }
 
             context.Principal = new ClaimsPrincipal(new GenericIdentity("StaticTokenUser", "StaticToken"));
+            return Task.FromResult(0);
         }
 
         public Task ChallengeAsync(HttpAuthenticationChallengeContext context, System.Threading.CancellationToken cancellationToken)

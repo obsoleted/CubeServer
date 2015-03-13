@@ -3,14 +3,13 @@
     using System.Web.Http;
     using System.Reflection;
 
-
     public class StatusController : ApiController
     {
         
         [Route("status")]
-        public string Get()
+        public IHttpActionResult Get()
         {
-            return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            return Ok(Assembly.GetExecutingAssembly().GetName().Version.ToString());
         }
     }
 }
