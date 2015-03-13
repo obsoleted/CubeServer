@@ -8,18 +8,23 @@
     using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
+    using System.Web.Caching;
     using System.Web.Http;
     using CubeServer.Models;
     using Data;
     using Filters;
+    using WebApi.OutputCache.V2;
 
     [StaticTokenAuthentication]
     [Authorize]
-    public class ObjectController : ApiController
+    public class ModelController : ApiController
     {
         private IModelRepository modelRepository;
 
-        public ObjectController(IModelRepository modelRepository)
+        private const int ClientCacheTimeInSeconds = 120;
+        private const int ServerCacheTimeInSeconds = 600;
+
+        public ModelController(IModelRepository modelRepository)
         {
             this.modelRepository = modelRepository;
         }
@@ -36,6 +41,7 @@
             return modelRepository.GetViewportMetadataAsync(modelName, viewport);
         }
 
+        [CacheOutput(ClientTimeSpan = ClientCacheTimeInSeconds, ServerTimeSpan = ServerCacheTimeInSeconds)]
         [Route("models/{modelName}/v{viewport}/{data}")]
         public async Task<HttpResponseMessage> GetVertexData(string modelName, int viewport, string data)
         {
@@ -49,6 +55,8 @@
             return result;
         }
 
+
+        [CacheOutput(ClientTimeSpan = ClientCacheTimeInSeconds, ServerTimeSpan = ServerCacheTimeInSeconds)]
         [Route("models/{modelName}/t{textureIndex}/{data}")]
         public async Task<HttpResponseMessage> GetTextureData(string modelName, int textureIndex, string data)
         {

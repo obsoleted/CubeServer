@@ -80,6 +80,7 @@
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.28\lib\net45\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
@@ -143,6 +144,12 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="WebApi.OutputCache.Core">
+      <HintPath>..\packages\Strathweb.CacheOutput.WebApi2.0.6\lib\net45\WebApi.OutputCache.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="WebApi.OutputCache.V2">
+      <HintPath>..\packages\Strathweb.CacheOutput.WebApi2.0.6\lib\net45\WebApi.OutputCache.V2.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -189,7 +196,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="Controllers\ObjectController.cs" />
+    <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Data\AzureModelRepository.cs" />
     <Compile Include="Data\IModelRepository.cs" />
