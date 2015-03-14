@@ -30,24 +30,40 @@
         }
 
         [Route("models/{modelName}")]
-        public IHttpActionResult GetMetadata(string modelName)
+        public async Task<IHttpActionResult> GetMetadataAsync(string modelName)
         {
-            return Ok(modelRepository.GetModelMetadataAsync(modelName));
+            var metadata = await modelRepository.GetModelMetadataAsync(modelName);
+            if (metadata == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(metadata);
         }
 
         [Route("models/{modelName}/{viewport}")]
-        public IHttpActionResult GetViewportMetadata(string modelName, int viewport)
+        public async Task<IHttpActionResult> GetViewportMetadataAsync(string modelName, int viewport)
         {
-            return Ok(modelRepository.GetViewportMetadataAsync(modelName, viewport));
+            var viewportMetadata = await modelRepository.GetViewportMetadataAsync(modelName, viewport);
+            if (viewportMetadata == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(viewportMetadata);
         }
 
         [CacheOutput(ClientTimeSpan = ClientCacheTimeInSeconds, ServerTimeSpan = ServerCacheTimeInSeconds)]
         [Route("models/{modelName}/v{viewport}/{data}")]
-        public async Task<IHttpActionResult> GetVertexData(string modelName, int viewport, string data)
+        public async Task<IHttpActionResult> GetVertexDataAsync(string modelName, int viewport, string data)
         {
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-            //string dataPath = string.Format("{0}_{1}_{2}.obj", x, y, z);
-            var stream = await modelRepository.GetCubeData(modelName, "v" + viewport, data);
+            var stream = await modelRepository.GetVertexData(modelName, viewport, data);
+            if (stream == null)
+            {
+                return NotFound();
+            }
+
             result.Content = new StreamContent(stream);
             result.Content.Headers.ContentType =
                 new MediaTypeHeaderValue("application/octet-stream");
@@ -58,11 +74,14 @@
 
         [CacheOutput(ClientTimeSpan = ClientCacheTimeInSeconds, ServerTimeSpan = ServerCacheTimeInSeconds)]
         [Route("models/{modelName}/t{textureIndex}/{data}")]
-        public async Task<IHttpActionResult> GetTextureData(string modelName, int textureIndex, string data)
+        public async Task<IHttpActionResult> GetTextureDataAsync(string modelName, int textureIndex, string data)
         {
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-            //string dataPath = string.Format("{0}_{1}_{2}.obj", x, y, z);
-            var stream = await modelRepository.GetCubeData(modelName, "t" + textureIndex, data);
+            var stream = await modelRepository.GetTexture(modelName, textureIndex, data);
+            if (stream == null)
+            {
+                return NotFound();
+            }
             result.Content = new StreamContent(stream);
             result.Content.Headers.ContentType =
                 new MediaTypeHeaderValue("application/octet-stream");

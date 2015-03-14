@@ -21,13 +21,13 @@
             CloudBlobContainer modelContainer = blobClient.GetContainerReference(modelName);
             if (!await modelContainer.ExistsAsync())
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return null;
             }
 
             ICloudBlob indexBlob = await modelContainer.GetBlobReferenceFromServerAsync("index.json");
             if (!await indexBlob.ExistsAsync())
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return null;
             }
             string indexJson;
             using (var memoryStream = new MemoryStream())
@@ -47,14 +47,14 @@
             CloudBlobContainer modelContainer = blobClient.GetContainerReference(modelName);
             if (!await modelContainer.ExistsAsync())
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return null;
             }
 
             var viewportDirectory = modelContainer.GetDirectoryReference("v" + viewport);
             var metadataBlob = viewportDirectory.GetBlockBlobReference("metadata.json");
             if (!await metadataBlob.ExistsAsync())
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return null;
             }
 
             string metadataJson;
@@ -74,17 +74,28 @@
             CloudBlobContainer modelContainer = blobClient.GetContainerReference(modelName);
             if (!await modelContainer.ExistsAsync())
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return null;
             }
 
             var viewportDirectory = modelContainer.GetDirectoryReference(directory);
             var metadataBlob = viewportDirectory.GetBlockBlobReference(data);
             if (!await metadataBlob.ExistsAsync())
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return null;
             }
 
             return await metadataBlob.OpenReadAsync();
+        }
+
+
+        public Task<Stream> GetTexture(string modelName, int textureIndex, string texturePath)
+        {
+            return GetCubeData(modelName, "t" + textureIndex, texturePath);
+        }
+
+        public Task<Stream> GetVertexData(string modelName, int viewport, string vertexDataPath)
+        {
+            return GetCubeData(modelName, "v" + viewport, vertexDataPath);
         }
     }
 }

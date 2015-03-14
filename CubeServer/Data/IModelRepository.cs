@@ -15,6 +15,8 @@
 
         Task<ViewportMetadata> GetViewportMetadataAsync(string modelName, int viewport);
 
-        Task<Stream> GetCubeData(string modelName, string directory, string data);
+        Task<Stream> GetTexture(string modelName, int textureIndex, string texturePath);
+
+        Task<Stream> GetVertexData(string modelName, int viewport, string vertexDataPath);
     }
 }

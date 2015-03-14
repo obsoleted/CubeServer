@@ -8,7 +8,7 @@ namespace CubeServer.Models
 
     public class ViewportMetadata
     {
-        public bool[][][] CubeExists { get; set; }
+        public bool[,,] CubeExists { get; set; }
         public Extents Extents { get; set; }
         public Gridsize GridSize { get; set; }
     }

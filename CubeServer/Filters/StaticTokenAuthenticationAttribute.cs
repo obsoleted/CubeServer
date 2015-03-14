@@ -16,7 +16,12 @@
 
     public class StaticTokenAuthenticationAttribute : Attribute, IAuthenticationFilter
     {
-        private const string StaticTokenAuthenticationScheme = "StaticToken";
+        public static readonly string Scheme = "StaticToken";
+
+        public static readonly string AuthenticatedUsername = "StaticTokenUser";
+
+        public static readonly string AuthenticationType = "StaticToken";
+ 
 
         public Task AuthenticateAsync(HttpAuthenticationContext context, System.Threading.CancellationToken cancellationToken)
         {
@@ -28,30 +33,24 @@
                 return Task.FromResult(0);
             }
 
-            if (authorization.Scheme != StaticTokenAuthenticationScheme)
+            if (authorization.Scheme != Scheme)
             {
-                return Task.FromResult(0);
-            }
-
-            if (String.IsNullOrEmpty(authorization.Parameter))
-            {
-                context.ErrorResult = new UnauthorizedResult(new[] { new AuthenticationHeaderValue(StaticTokenAuthenticationScheme) }, request);
                 return Task.FromResult(0);
             }
 
             if (authorization.Parameter != Configuration.StaticToken)
             {
-                context.ErrorResult = new UnauthorizedResult(new [] { new AuthenticationHeaderValue(StaticTokenAuthenticationScheme) }, request);
+                context.ErrorResult = new UnauthorizedResult(new [] { new AuthenticationHeaderValue(Scheme) }, request);
                 return Task.FromResult(0);
             }
 
-            context.Principal = new ClaimsPrincipal(new GenericIdentity("StaticTokenUser", "StaticToken"));
+            context.Principal = new ClaimsPrincipal(new GenericIdentity(AuthenticatedUsername, AuthenticationType));
             return Task.FromResult(0);
         }
 
         public Task ChallengeAsync(HttpAuthenticationChallengeContext context, System.Threading.CancellationToken cancellationToken)
         {
-            var challenge = new AuthenticationHeaderValue(StaticTokenAuthenticationScheme);
+            var challenge = new AuthenticationHeaderValue(Scheme);
             context.Result = new AddChallengeOnUnauthorizedResult(challenge, context.Result);
             return Task.FromResult(0);
         }
