@@ -14,6 +14,7 @@
     using Data;
     using Filters;
     using WebApi.OutputCache.V2;
+    using Config = CubeServer.Configuration;
 
     [StaticTokenAuthentication]
     [Authorize]
@@ -24,6 +25,9 @@
         private const int ClientCacheTimeInSeconds = 120;
         private const int ServerCacheTimeInSeconds = 600;
 
+        private const string RoutePrefix = "models";
+
+
         public ModelController(IModelRepository modelRepository)
         {
             this.modelRepository = modelRepository;
@@ -33,10 +37,34 @@
         public async Task<IHttpActionResult> GetMetadataAsync(string modelName)
         {
             var metadata = await modelRepository.GetModelMetadataAsync(modelName);
+
             if (metadata == null)
             {
                 return NotFound();
             }
+
+            metadata.MetadataTemplate = metadata.MetadataTemplate.Replace(
+                Config.UrlReplacementTarget,
+                Config.ServiceRootUrl + "/" + RoutePrefix);
+
+            metadata.CubeTemplate = metadata.CubeTemplate.Replace(
+                Config.UrlReplacementTarget,
+                Config.ServiceRootUrl + "/" + RoutePrefix);
+
+            metadata.TexturePath = metadata.TexturePath.Replace(
+                Config.UrlReplacementTarget,
+                Config.ServiceRootUrl + "/" + RoutePrefix);
+
+            if (!string.IsNullOrEmpty(metadata.MtlTemplate))
+            {
+                metadata.MtlTemplate = metadata.MtlTemplate.Replace(
+                    Config.UrlReplacementTarget,
+                    Config.ServiceRootUrl + "/" + RoutePrefix);
+            }
+
+            metadata.JpgTemplate = metadata.JpgTemplate.Replace(
+                Config.UrlReplacementTarget,
+                Config.ServiceRootUrl + "/" + RoutePrefix);
 
             return Ok(metadata);
         }
